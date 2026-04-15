@@ -15,8 +15,10 @@ jobs:
           distribution: 'temurin'
 
       - name: Decode keystore
+        shell: bash
         run: |
-          echo "${{ secrets.BKCALC_KEYSTORE_BASE64 }}" | base64 -d > my-release-key.jks
+          printf '%s' "${{ secrets.BKCALC_KEYSTORE_BASE64 }}" | base64 -d > my-release-key.jks
+          ls -lh my-release-key.jks
 
       - name: Show SHA fingerprints
         run: |
