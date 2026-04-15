@@ -1,12 +1,10 @@
-
-name: Generate Keystore
+name: Show SHA From Existing Keystore
 
 on:
-  workflow_dispatch: 
-    # Workflow by Nader
+  workflow_dispatch:
 
 jobs:
-  generate-keystore:
+  show-sha:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,21 +14,14 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Generate Keystore using Keytool
+      - name: Decode keystore
         run: |
-          keytool -genkey -v \
-            -keystore my-release-key.jks \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -alias my-key-alias \
-            -dname "CN=bkcalc, OU=Android App, O=Saif_Trisha, L=Chattogram, ST=Chattogram, C=BD"\
-            -storepass "myTypo#@Txizd56" \
-            -keypass "myTypo#@Txizd56"
+          echo "${{ secrets.BKCALC_KEYSTORE_BASE64 }}" | base64 -d > my-release-key.jks
 
-      - name: Upload Keystore Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: generated-keystore
-          path: my-release-key.jks
-          retention-days: 1
+      - name: Show SHA fingerprints
+        run: |
+          keytool -list -v \
+            -keystore my-release-key.jks \
+            -alias "${{ secrets.BKCALC_KEY_ALIAS }}" \
+            -storepass "${{ secrets.BKCALC_KEYSTORE_PASSWORD }}" \
+            -keypass "${{ secrets.BKCALC_KEY_PASSWORD }}"
