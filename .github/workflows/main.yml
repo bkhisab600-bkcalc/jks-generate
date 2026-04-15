@@ -1,0 +1,36 @@
+
+name: Generate Keystore
+
+on:
+  workflow_dispatch: 
+    # Workflow by Nader
+
+jobs:
+  generate-keystore:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Generate Keystore using Keytool
+        run: |
+          keytool -genkey -v \
+            -keystore my-release-key.jks \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -alias my-key-alias \
+            -dname "CN=bkcalc, OU=Android App, O=Saif_Trisha, L=Chattogram, ST=Chattogram, C=BD"\
+            -storepass "myTypo#@Txizd56" \
+            -keypass "myTypo#@Txizd56"
+
+      - name: Upload Keystore Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-keystore
+          path: my-release-key.jks
+          retention-days: 1
